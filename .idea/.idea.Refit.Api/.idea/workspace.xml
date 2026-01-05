@@ -12,17 +12,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="05cc606c-da29-4515-ad6e-fafb4ea8a94e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/publish-workflow.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/copilot.data.migration.agent.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/copilot.data.migration.ask.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/copilot.data.migration.ask2agent.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/copilot.data.migration.edit.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/git_toolbox_prj.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/indexLayout.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Refit.Api/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Refit.Api/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Refit.Api/Program.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +26,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="MIXED" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/AppData/Local/Temp/SourceGeneratedDocuments/61C56304811FF56921776DA5/InterfaceStubGeneratorV2/Refit.Generator.InterfaceStubGeneratorV2/IBlogApi.g.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="McpProjectServerCommands">
     <commands />
@@ -156,7 +150,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767630762973</updated>
-      <workItem from="1767630764356" duration="3323000" />
+      <workItem from="1767630764356" duration="5137000" />
     </task>
     <task id="LOCAL-00001" summary="add: first commit">
       <option name="closed" value="true" />
@@ -182,7 +176,31 @@
       <option name="project" value="LOCAL" />
       <updated>1767633879685</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="a">
+      <option name="closed" value="true" />
+      <created>1767634274615</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1767634274615</updated>
+    </task>
+    <task id="LOCAL-00005" summary="remove unnessacry">
+      <option name="closed" value="true" />
+      <created>1767634284599</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1767634284599</updated>
+    </task>
+    <task id="LOCAL-00006" summary="add: azure-pipelines.yml">
+      <option name="closed" value="true" />
+      <created>1767635653931</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1767635653931</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -206,7 +224,10 @@
     <MESSAGE value="add: first commit" />
     <MESSAGE value="Add initial project structure with Docker support and API definitions" />
     <MESSAGE value="fix README.md" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix README.md" />
+    <MESSAGE value="a" />
+    <MESSAGE value="remove unnessacry" />
+    <MESSAGE value="add: azure-pipelines.yml" />
+    <option name="LAST_COMMIT_MESSAGE" value="add: azure-pipelines.yml" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

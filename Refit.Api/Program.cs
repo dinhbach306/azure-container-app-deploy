@@ -35,6 +35,7 @@ app.MapPut("/posts/{id:int}", async (int id, [FromBody] Post post, IBlogApi api)
 app.MapDelete("/posts/{id:int}", async (int id, IBlogApi api) =>
     await api.DeletePostAsync(id));
 
+app.MapGet("/Test-CiCd", () => "CI/CD is working!");
 app.UseHttpsRedirection();
 
 app.Run();
