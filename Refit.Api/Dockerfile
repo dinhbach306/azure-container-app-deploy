@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY Refit.Api.csproj .
+COPY Refit.Api/Refit.Api.csproj Refit.Api/
 RUN dotnet restore Refit.Api.csproj
 
 COPY . .
