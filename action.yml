@@ -1,0 +1,183 @@
+name: 'Azure Container Apps Deploy'
+description: 'Deploy container applications to Azure Container Apps'
+author: 'dinhbach306'
+branding:
+  icon: 'cloud'
+  color: 'blue'
+
+inputs:
+  azure-credentials:
+    description: 'Azure credentials (Service Principal) in JSON format'
+    required: true
+  resource-group:
+    description: 'Name of the Azure Resource Group'
+    required: true
+  container-app-name:
+    description: 'Name of the Azure Container App'
+    required: true
+  container-image:
+    description: 'Container image name with tag (e.g., myregistry.azurecr.io/myapp:latest)'
+    required: true
+  container-app-environment:
+    description: 'Name of the Azure Container App Environment'
+    required: false
+  location:
+    description: 'Azure region for deployment (e.g., eastus, westus2)'
+    required: false
+    default: 'eastus'
+  target-port:
+    description: 'Target port for the container application'
+    required: false
+    default: '80'
+  ingress-enabled:
+    description: 'Enable external ingress for the container app'
+    required: false
+    default: 'true'
+  registry-server:
+    description: 'Container registry server (e.g., myregistry.azurecr.io)'
+    required: false
+  registry-username:
+    description: 'Container registry username'
+    required: false
+  registry-password:
+    description: 'Container registry password'
+    required: false
+  cpu:
+    description: 'CPU allocation for the container (e.g., 0.5, 1.0)'
+    required: false
+    default: '0.5'
+  memory:
+    description: 'Memory allocation for the container (e.g., 1.0Gi, 2.0Gi)'
+    required: false
+    default: '1.0Gi'
+  min-replicas:
+    description: 'Minimum number of replicas'
+    required: false
+    default: '1'
+  max-replicas:
+    description: 'Maximum number of replicas'
+    required: false
+    default: '10'
+  environment-variables:
+    description: 'Environment variables in JSON format (e.g., [{"name":"KEY","value":"VALUE"}])'
+    required: false
+
+outputs:
+  container-app-url:
+    description: 'URL of the deployed Container App'
+  container-app-fqdn:
+    description: 'Fully Qualified Domain Name of the Container App'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Azure Login'
+      uses: azure/login@v1
+      with:
+        creds: ${{ inputs.azure-credentials }}
+    
+    - name: 'Deploy to Azure Container Apps'
+      shell: bash
+      run: |
+        echo "Deploying to Azure Container Apps..."
+        
+        # Check if Container App Environment exists or needs to be created
+        ENV_EXISTS=$(az containerapp env list --resource-group ${{ inputs.resource-group }} --query "[?name=='${{ inputs.container-app-environment }}'].name" -o tsv)
+        
+        if [ -z "$ENV_EXISTS" ] && [ -n "${{ inputs.container-app-environment }}" ]; then
+          echo "Creating Container App Environment: ${{ inputs.container-app-environment }}"
+          az containerapp env create \
+            --name ${{ inputs.container-app-environment }} \
+            --resource-group ${{ inputs.resource-group }} \
+            --location ${{ inputs.location }}
+        fi
+        
+        # Prepare registry credentials if provided
+        REGISTRY_ARGS=""
+        if [ -n "${{ inputs.registry-server }}" ]; then
+          REGISTRY_ARGS="--registry-server ${{ inputs.registry-server }}"
+        fi
+        if [ -n "${{ inputs.registry-username }}" ]; then
+          REGISTRY_ARGS="$REGISTRY_ARGS --registry-username ${{ inputs.registry-username }}"
+        fi
+        if [ -n "${{ inputs.registry-password }}" ]; then
+          REGISTRY_ARGS="$REGISTRY_ARGS --registry-password ${{ inputs.registry-password }}"
+        fi
+        
+        # Prepare environment variables if provided
+        ENV_VARS_ARGS=""
+        if [ -n "${{ inputs.environment-variables }}" ]; then
+          ENV_VARS_ARGS="--env-vars '${{ inputs.environment-variables }}'"
+        fi
+        
+        # Check if Container App exists
+        APP_EXISTS=$(az containerapp list --resource-group ${{ inputs.resource-group }} --query "[?name=='${{ inputs.container-app-name }}'].name" -o tsv)
+        
+        if [ -z "$APP_EXISTS" ]; then
+          echo "Creating new Container App: ${{ inputs.container-app-name }}"
+          
+          CREATE_CMD="az containerapp create \
+            --name ${{ inputs.container-app-name }} \
+            --resource-group ${{ inputs.resource-group }} \
+            --image ${{ inputs.container-image }} \
+            --cpu ${{ inputs.cpu }} \
+            --memory ${{ inputs.memory }} \
+            --min-replicas ${{ inputs.min-replicas }} \
+            --max-replicas ${{ inputs.max-replicas }} \
+            --target-port ${{ inputs.target-port }}"
+          
+          if [ "${{ inputs.ingress-enabled }}" = "true" ]; then
+            CREATE_CMD="$CREATE_CMD --ingress external"
+          fi
+          
+          if [ -n "${{ inputs.container-app-environment }}" ]; then
+            CREATE_CMD="$CREATE_CMD --environment ${{ inputs.container-app-environment }}"
+          fi
+          
+          if [ -n "$REGISTRY_ARGS" ]; then
+            CREATE_CMD="$CREATE_CMD $REGISTRY_ARGS"
+          fi
+          
+          if [ -n "$ENV_VARS_ARGS" ]; then
+            CREATE_CMD="$CREATE_CMD $ENV_VARS_ARGS"
+          fi
+          
+          eval $CREATE_CMD
+        else
+          echo "Updating existing Container App: ${{ inputs.container-app-name }}"
+          
+          UPDATE_CMD="az containerapp update \
+            --name ${{ inputs.container-app-name }} \
+            --resource-group ${{ inputs.resource-group }} \
+            --image ${{ inputs.container-image }} \
+            --cpu ${{ inputs.cpu }} \
+            --memory ${{ inputs.memory }} \
+            --min-replicas ${{ inputs.min-replicas }} \
+            --max-replicas ${{ inputs.max-replicas }}"
+          
+          if [ -n "$REGISTRY_ARGS" ]; then
+            UPDATE_CMD="$UPDATE_CMD $REGISTRY_ARGS"
+          fi
+          
+          if [ -n "$ENV_VARS_ARGS" ]; then
+            UPDATE_CMD="$UPDATE_CMD $ENV_VARS_ARGS"
+          fi
+          
+          eval $UPDATE_CMD
+        fi
+        
+        # Get Container App URL
+        FQDN=$(az containerapp show \
+          --name ${{ inputs.container-app-name }} \
+          --resource-group ${{ inputs.resource-group }} \
+          --query properties.configuration.ingress.fqdn \
+          -o tsv)
+        
+        if [ -n "$FQDN" ]; then
+          echo "container-app-fqdn=$FQDN" >> $GITHUB_OUTPUT
+          echo "container-app-url=https://$FQDN" >> $GITHUB_OUTPUT
+          echo "Container App deployed successfully!"
+          echo "URL: https://$FQDN"
+        else
+          echo "Container App deployed successfully (no external URL - ingress not enabled)"
+        fi

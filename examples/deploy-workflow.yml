@@ -1,0 +1,57 @@
+name: Example - Deploy to Azure Container Apps
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Azure Container Apps
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Build and push Docker image
+        run: |
+          # Build your Docker image
+          docker build -t myregistry.azurecr.io/myapp:${{ github.sha }} .
+          
+          # Log in to Azure Container Registry
+          az acr login --name myregistry
+          
+          # Push the image
+          docker push myregistry.azurecr.io/myapp:${{ github.sha }}
+      
+      - name: Deploy to Azure Container Apps
+        uses: dinhbach306/azure-container-app-deploy@v1
+        with:
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          resource-group: 'my-resource-group'
+          container-app-name: 'my-container-app'
+          container-image: 'myregistry.azurecr.io/myapp:${{ github.sha }}'
+          container-app-environment: 'my-container-env'
+          location: 'eastus'
+          target-port: '8080'
+          cpu: '1.0'
+          memory: '2.0Gi'
+          min-replicas: '2'
+          max-replicas: '10'
+          environment-variables: |
+            [
+              {"name": "NODE_ENV", "value": "production"},
+              {"name": "LOG_LEVEL", "value": "info"}
+            ]
+      
+      - name: Display deployment URL
+        run: |
+          echo "Application deployed successfully!"
+          echo "Access your app at: ${{ steps.deploy.outputs.container-app-url }}"
